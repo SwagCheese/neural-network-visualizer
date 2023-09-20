@@ -1,18 +1,19 @@
 import type {Layer} from "./layer.ts"
 
 export class NeuralNetwork {
-    constructor(private _layers: Layer[]) {}
+    constructor(private _layers: Layer[]) {
+        this.layers = _layers
+    }
 
     forwardPassNoActivation(inputs: number[], lastIndex?: number): number[] {
         if (lastIndex === undefined || lastIndex > this.layers.length) lastIndex = this.layers.length
+        if (lastIndex < 0) throw new Error("Last index cannot be negative.")
 
-        for (let i: number = 0; i < lastIndex; ++i) {
+        for (let i: number = 0; i < lastIndex-1; ++i) {
             inputs = this.layers[i].activate(inputs)
         }
 
-        if (lastIndex === this.layers.length) return inputs
-
-        return this.layers[lastIndex].preActivation(inputs)
+        return this.layers[lastIndex-1].preActivation(inputs)
     }
 
     predict(inputs: number[]): number[] {
@@ -28,6 +29,9 @@ export class NeuralNetwork {
     }
 
     set layers(value: Layer[]) {
+        if (value.length == 0) {
+            throw new Error("Layers array must not be empty.")
+        }
         this._layers = value
     }
 }

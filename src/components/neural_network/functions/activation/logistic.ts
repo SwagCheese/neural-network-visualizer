@@ -8,9 +8,9 @@ Actually, a sigmoid function is a bounded function with an "S"-shaped curve.
  */
 export class Logistic implements Activation, Gradient {
     apply(array: number[]): number[] {
-        const result: number[] = [array.length]
+        const result: number[] = []
 
-        for (const i in result) {
+        for (const i in array) {
             result[i] = 1 / (1 + Math.exp(-array[i]))
         }
 
@@ -18,11 +18,11 @@ export class Logistic implements Activation, Gradient {
     }
 
     derive(array: number[]): number[] {
-        const result: number[] = [array.length]
+        const result: number[] = []
+        const applied: number[] = this.apply(array)
 
-        for (const i in result) {
-            const sigmoid: number = 1 / (1 + Math.exp(-array[i]))
-            result[i] = sigmoid * (1 - sigmoid)
+        for (const i in array) {
+            result[i] = applied[i] * (1 - applied[i])
         }
 
         return result

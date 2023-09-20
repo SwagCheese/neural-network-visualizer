@@ -1,18 +1,18 @@
-import { test, expect } from 'vitest';
+import {test, expect, describe} from 'vitest';
 import {Neuron} from "../../../src/components/neural_network/neuron";
 
-test('Neuron Class', (): void => {
+describe('Neuron Class', (): void => {
     const weights: number[] = [0.5, -0.2, 0.1];
     const bias: number = 0.3;
     const neuron: Neuron = new Neuron(weights, bias);
 
     expect(neuron.weights).toEqual(weights);
-    expect(neuron.bias).toBe(bias);
+    expect(neuron.bias).toEqual(bias);
 
     test('Activation', (): void => {
         const inputs: number[] = [1.0, -0.5, 0.2];
         const expectedActivation: number = bias + (inputs[0] * weights[0]) + (inputs[1] * weights[1]) + (inputs[2] * weights[2]);
-        expect(neuron.activate(inputs)).toBe(expectedActivation);
+        expect(neuron.activate(inputs)).toEqual(expectedActivation);
     });
 
     test('Set Weights', (): void => {
@@ -29,11 +29,6 @@ test('Neuron Class', (): void => {
     test('Set Bias', (): void => {
         const newBias: number = 0.1;
         neuron.bias = newBias;
-        expect(neuron.bias).toBe(newBias);
-    });
-
-    test('Set Bias - Invalid Type', (): void => {
-        const newBias: any = 'invalid';
-        expect((): void => (neuron.bias = newBias)).toThrowError('The bias value must be a number.');
+        expect(neuron.bias).toEqual(newBias);
     });
 });

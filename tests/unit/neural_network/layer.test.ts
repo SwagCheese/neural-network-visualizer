@@ -1,9 +1,9 @@
-import {test, expect} from 'vitest';
+import {test, expect, describe} from 'vitest';
 import {Neuron} from "../../../src/components/neural_network/neuron";
 import {Linear} from "../../../src/components/neural_network/functions/activation/linear";
 import {Layer} from "../../../src/components/neural_network/layer";
 
-test('Layer Class', (): void => {
+describe('Layer Class', (): void => {
     const neurons: Neuron[] = [
         new Neuron([0.5, -0.2, 0.1], 0.3),
         new Neuron([-0.1, 0.4, -0.3], 0.2)
@@ -11,8 +11,10 @@ test('Layer Class', (): void => {
     const activationFunction: Linear = new Linear();
     const layer: Layer = new Layer(neurons, activationFunction);
 
-    expect(layer.neurons).toEqual(neurons);
-    expect(layer.activationFunction).toBe(activationFunction);
+    test('Constructor', () => {
+        expect(layer.neurons).toEqual(neurons);
+        expect(layer.activationFunction).toEqual(activationFunction);
+    });
 
     test('PreActivation', (): void => {
         const inputs: number[] = [1.0, -0.5, 0.2];
@@ -30,7 +32,7 @@ test('Layer Class', (): void => {
     });
 
     test('Invalid Neurons', (): void => {
-        const invalidNeurons: Neuron[] = [new Neuron([0.5], 0.3)];
-        expect((): Layer => new Layer(invalidNeurons, activationFunction)).toThrowError('Neurons array must have at least one neuron.');
+        const invalidNeurons: Neuron[] = [];
+        expect(() => new Layer(invalidNeurons, activationFunction)).toThrowError('The neurons array must not be empty.');
     });
 });

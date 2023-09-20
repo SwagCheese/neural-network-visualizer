@@ -3,10 +3,10 @@ import type {Jacobian} from "./derivatives/jacobian.ts"
 
 export class Softmax implements Activation, Jacobian {
     apply(array: number[]): number[] {
-        const result: number[] = [array.length]
+        const result: number[] = []
         let eSum: number = 0
 
-        for (const i in result) {
+        for (const i in array) {
             result[i] = Math.exp(array[i])
             eSum += result[i]
         }
@@ -20,12 +20,17 @@ export class Softmax implements Activation, Jacobian {
 
 
     derive(array: number[]): number[][] {
-        const result: number[][] = [[]]
+        const result: number[][] = []
         const activated: number[] = this.apply(array)
 
-        for (const i in array) {
-            for (const j in array) {
-                result[i][j] = activated[j] * ((i === j ? 1 : 0) - activated[i])
+        for (let i = 0; i < array.length; ++i) {
+            result.push([])
+            for (let j = 0; j < array.length; ++j) {
+                if (i == j) {
+                    result[i].push(activated[i] * (1 - activated[i]))
+                } else {
+                    result[i].push(-activated[i] * activated[j])
+                }
             }
         }
 

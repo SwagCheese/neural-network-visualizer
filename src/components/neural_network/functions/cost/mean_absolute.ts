@@ -18,9 +18,7 @@ export class MeanAbsolute implements Cost {
         const activated: number[] = activationFunction.apply(preactivation)
 
         for (const i in activated) {
-            if (activated[i] > actual[i]) result[i] = 1
-            else if (activated[i] < actual[i]) result[i] = -1
-            else result[i] = 0 // technically this case is undefined, but I choose it to be 0
+            result[i] = Math.sign(actual[i] - activated[i])/actual.length;
         }
 
         return result

@@ -4,11 +4,10 @@ import type {Jacobian} from "../activation/derivatives/jacobian.ts";
 
 export class CrossEntropy implements Cost {
     apply(actual: number[], predicted: number[]): number {
-        const epsilon: number = 1e-10
         let loss: number = 0
 
         for (const i in actual) {
-            loss += actual[i] * Math.log(predicted[i] + epsilon)
+            loss += actual[i] * Math.log(predicted[i] + Number.EPSILON)
         }
 
         return -loss

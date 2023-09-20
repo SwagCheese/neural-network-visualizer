@@ -1,56 +1,63 @@
-import { test, expect } from 'vitest';
+import {test, expect, describe} from 'vitest';
 import {Layer} from "../../../src/components/neural_network/layer";
 import {Neuron} from "../../../src/components/neural_network/neuron";
 import {Linear} from "../../../src/components/neural_network/functions/activation/linear";
 import {NeuralNetwork} from "../../../src/components/neural_network/neural_network";
+import {Tanh} from "../../../src/components/neural_network/functions/activation/tanh";
 
-test('NeuralNetwork Class', (): void => {
+describe('Neural Network Class', (): void => {
+    /*
+    Here it would be best to use Linear activation, however that makes it impossible
+    to differentiate between the predict method and the forwardPassNoActivation method.
+    Tanh seems to be the most robust option, as it only uses functions in the builtin Math object.
+     */
     const layers: Layer[] = [
-        new Layer([new Neuron([0.5, -0.2, 0.1], 0.3)], new Linear()),
-        new Layer([new Neuron([-0.1, 0.4, -0.3], 0.2)], new Linear())
+        new Layer([new Neuron([0.5, -0.2, 0.1], 0.3)], new Tanh()),
+        new Layer([new Neuron([0.4], 0.2)], new Tanh())
     ];
     const neuralNetwork: NeuralNetwork = new NeuralNetwork(layers);
 
-    expect(neuralNetwork.layers).toEqual(layers);
+    test('Constructor - Valid layers', () => {
+        expect(neuralNetwork.layers).toEqual(layers);
+    });
+
+    test('Constructor - Invalid Layers', (): void => {
+        const invalidLayers: Layer[] = [];
+        expect(() => new NeuralNetwork(invalidLayers)).toThrowError('Layers array must not be empty.');
+    });
 
     test('Forward Pass Without Activation - Full Network', (): void => {
         const inputs: number[] = [1.0, -0.5, 0.2];
-        const expectedOutput: number[] = neuralNetwork.forwardPassNoActivation(inputs);
-        // Add your expectations for the output here
+
+        const expectedOutputs: number[] = [0.49035896593963227092];
+        const recievedOutputs = neuralNetwork.forwardPassNoActivation(inputs);
+
+        for (let i in expectedOutputs) {
+            expect(recievedOutputs[i]).toBeCloseTo(expectedOutputs[i]);
+        }
     });
 
     test('Forward Pass Without Activation - Partial Network', (): void => {
         const inputs: number[] = [1.0, -0.5, 0.2];
         const lastIndex: number = 1;
-        const expectedOutput: number[] = neuralNetwork.forwardPassNoActivation(inputs, lastIndex);
-        // Add your expectations for the output here
+
+        const expectedOutputs: number[] = [0.92];
+
+        expect(neuralNetwork.forwardPassNoActivation(inputs, lastIndex)).toEqual(expectedOutputs);
     });
 
-    test('Forward Pass Without Activation - Invalid Last Index', (): void => {
+    test('Predict', (): void => {
         const inputs: number[] = [1.0, -0.5, 0.2];
-        const lastIndex: number = 5; // Greater than the number of layers
-        expect(() => neuralNetwork.forwardPassNoActivation(inputs, lastIndex)).toThrowError('Invalid last index.');
+
+        const expectedOutputs: number[] = [0.45450129297896014959];
+        const recievedOutputs = neuralNetwork.predict(inputs);
+
+        for (let i in expectedOutputs) {
+            expect(recievedOutputs[i]).toBeCloseTo(expectedOutputs[i]);
+        }
     });
 
-    test('Predict - Full Network', (): void => {
-        const inputs: number[] = [1.0, -0.5, 0.2];
-        const expectedOutput: number[] = neuralNetwork.predict(inputs);
-        // Add your expectations for the output here
-    });
-
-    test('Predict - Partial Network', (): void => {
-        const inputs: number[] = [1.0, -0.5, 0.2];
-        const lastIndex: number = 1;
-        const expectedOutput: number[] = neuralNetwork.predict(inputs);
-        // Add your expectations for the output here
-    });
-
-    test('Invalid Layers', (): void => {
-        const invalidLayers: Layer[] = [];
-        expect(() => new NeuralNetwork(invalidLayers)).toThrowError('Layers array must have at least one layer.');
-    });
-
-    test('Set Layers', (): void => {
+    test('Set Layers - Valid', (): void => {
         const newLayers: Layer[] = [
             new Layer([new Neuron([0.1, -0.1, 0.1], 0.1)], new Linear()),
             new Layer([new Neuron([0.2, -0.2, 0.2], 0.2)], new Linear())
@@ -61,6 +68,6 @@ test('NeuralNetwork Class', (): void => {
 
     test('Set Layers - Invalid', (): void => {
         const newLayers: Layer[] = [];
-        expect(() => (neuralNetwork.layers = newLayers)).toThrowError('Layers array must have at least one layer.');
+        expect(() => (neuralNetwork.layers = newLayers)).toThrowError('Layers array must not be empty.');
     });
 });
